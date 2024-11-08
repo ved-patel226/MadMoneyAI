@@ -12,7 +12,15 @@ def prompt_result() -> dict:
     data = load_json_transcripts()["transcriptions"]
 
     json_format = "{ 'stock symbol': 'buy/sell'}"
-    prompt = f"You are an investment advisor. You will return JSON data in the form: {json_format} DO NOT PUT ANYTHING ELSE. JUST THE JSON DATA. This is your available data:"
+
+    prompt_lines = [
+        f"You are an investment advisor. You will return JSON data in the form: {json_format} DO NOT PUT ANYTHING ELSE. JUST THE JSON DATA. You will use this data to figure out the stock data. DO NOT USE ANY OTHER KNOWLEDGE EXCEPT FOR THIS DATA:"
+    ]
+
+    for stock in data:
+        prompt_lines.append(stock)
+
+    prompt = "\n".join(prompt_lines)
 
     jsons = []
 
@@ -24,7 +32,7 @@ def prompt_result() -> dict:
         try:
             json_result = json.loads(result)
             jsons.append(json_result)
-            break
+
         except json.JSONDecodeError:
             print(f"Failed to decode JSON, retrying... Attempt {attempt + 1}")
 
@@ -54,6 +62,8 @@ def prompt_result() -> dict:
     for key in keys_to_delete:
         print("Deleting because of conflicts: ", key)
         del merged_dict[key]
+
+    print("Merged dict: ", merged_dict)
 
     return merged_dict
 
