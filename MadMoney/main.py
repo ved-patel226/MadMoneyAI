@@ -25,9 +25,9 @@ def clear_screen():
 
 
 def run() -> None:
-    download_audio_as_wav(get_latest_video())
-    trim_audio()
-    convert_to_json()
+    # download_audio_as_wav(get_latest_video())
+    # trim_audio()
+    # convert_to_json()
 
     clear_screen()
 

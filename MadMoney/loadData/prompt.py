@@ -19,16 +19,23 @@ def prompt_result() -> dict:
     for stock in data:
         prompt += f"\n{stock}"
 
-    for _ in range(10):
+    for attempt in range(10):
         result = get_chat_completion(prompt)
         try:
             json_result = json.loads(result)
             jsons.append(json_result)
+            break
         except json.JSONDecodeError:
-            print("Failed to decode JSON, retrying...")
+            print(f"Failed to decode JSON, retrying... Attempt {attempt + 1}")
+
+            if len(prompt.split("\n")) > 1:
+                prompt = "\n".join(prompt.split("\n")[:-1])
+            else:
+                print("No more data to remove, exiting...")
+                raise ValueError("Failed to decode JSON after 10 attempts, exiting...")
 
     if len(jsons) == 0:
-        raise ValueError("Failed to decode JSON 5 times, exiting...")
+        raise ValueError("Failed to decode JSON 10 times, exiting...")
 
     merged = defaultdict(list)
 
