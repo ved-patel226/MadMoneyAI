@@ -1,1 +1,1 @@
-from .ticker_checker import is_valid_ticker
+from .ticker_checker import check_json_ticker

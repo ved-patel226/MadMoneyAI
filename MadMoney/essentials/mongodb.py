@@ -27,7 +27,8 @@ class MongoDBClient:
 
     def update_one(self, collection_name, query, update):
         collection = self.database[collection_name]
-        result = collection.update_one(query, update)
+        update_with_set = {"$set": update}
+        result = collection.update_one(query, update_with_set)
         return result.modified_count
 
     def delete_one(self, collection_name, query):

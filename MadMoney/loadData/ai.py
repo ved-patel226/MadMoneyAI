@@ -12,19 +12,25 @@ def get_chat_completion(message):
         api_key=env_to_var("GROQ_KEY"),
     )
 
-    chat_completion = client.chat.completions.create(
-        messages=[
-            {
-                "role": "user",
-                "content": message,
-            }
-        ],
-        model="llama3-8b-8192",
-    )
+    messages = [message[i : i + 2048] for i in range(0, len(message), 2048)]
+    if len(messages) > 3:
+        print("LLM MIGHT TAKE A WHILE TO RESPOND")
 
-    return chat_completion.choices[0].message.content
+    chat_completion = None
+    for msg in messages:
+        chat_completion = client.chat.completions.create(
+            messages=[
+                {
+                    "role": "user",
+                    "content": msg,
+                }
+            ],
+            model="llama-3.1-70b-versatile",
+        )
+
+    return chat_completion.choices[0].message.content if chat_completion else None
 
 
 if __name__ == "__main__":
-    response = get_chat_completion("hello")
+    response = get_chat_completion("hello " * 2048)
     print(response)

@@ -22,7 +22,7 @@ def convert_to_json() -> None:
 
     full_transcription = []
 
-    for file in tqdm(files, desc="Converting voice to text"):
+    for file in tqdm(files, desc="Converting voice to text (Please wait)"):
         with open("segments/" + file, "rb") as f:
             transcription = client.audio.transcriptions.create(
                 file=(file, f.read()),
