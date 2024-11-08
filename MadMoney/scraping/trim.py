@@ -11,11 +11,11 @@ def trim_audio() -> None:
     else:
         os.makedirs("segments", exist_ok=True)
 
+    segment_duration = 100000
     audio = AudioSegment.from_wav("audio.wav")
 
     audio_length_ms = len(audio)
-    audio_length_ms = (audio_length_ms // 10000) * 10000
-    segment_duration = 10000
+    audio_length_ms = (audio_length_ms // segment_duration) * segment_duration
 
     print(f"Audio duration: {audio_length_ms/1000} seconds")
 
@@ -30,3 +30,11 @@ def trim_audio() -> None:
         segment.export(f"segments/audio_segment_{i+1}.wav", format="wav")
 
     print("Audio has been split into segments and saved in 'segments' folder")
+
+
+def main() -> None:
+    trim_audio()
+
+
+if __name__ == "__main__":
+    main()

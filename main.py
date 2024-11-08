@@ -1,3 +1,3 @@
-from MadMoney import *
+from MadMoney import run
 
-convert_to_json()
+run()
