@@ -29,20 +29,20 @@ def run() -> None:
     trim_audio()
     convert_to_json()
 
-    # clear_screen()
+    clear_screen()
 
-    # result = prompt_result()
-    # result["date"] = datetime.now()
+    result = prompt_result()
+    result["date"] = datetime.now()
 
-    # mongo = MongoDBClient()
-    # mongo.insert_one("results", result)
-    # mongo.close()
+    mongo = MongoDBClient()
+    mongo.insert_one("results", result)
+    mongo.close()
 
-    # check_json_ticker()
+    check_json_ticker()
 
-    # clear_screen()
+    clear_screen()
 
-    # print("Data has been successfully added to the database.")
+    print("Data has been successfully added to the database.")
 
 
 def main() -> None:
