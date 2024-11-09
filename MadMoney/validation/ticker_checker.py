@@ -7,6 +7,7 @@ import yfinance as yf
 from MadMoney.loadData import load_json_results
 
 from MadMoney.essentials import MongoDBClient
+import time
 
 
 def is_valid_ticker(ticker):
@@ -35,6 +36,7 @@ def check_json_ticker() -> None:
         for key, value in data2.items():
             if key not in data:
                 print(key, value)
+                time.sleep(1)
 
         mongo = MongoDBClient()
         mongo.update_one("results", data2, data)

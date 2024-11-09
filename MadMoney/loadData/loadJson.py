@@ -9,7 +9,6 @@ from datetime import datetime
 
 def load_json_transcripts():
     mongo = MongoDBClient()
-
     transcripts = mongo.find_many("transcriptions", {})
     dates = []
     for transcript in transcripts:

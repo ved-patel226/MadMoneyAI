@@ -9,7 +9,11 @@ from MadMoney.loadData import *
 
 
 def prompt_result() -> dict:
-    data = load_json_transcripts()["transcriptions"]
+    summarize()
+
+    datas = load_json_transcripts()
+
+    data = datas["transcriptions"]
 
     json_format = "{ 'stock symbol': 'buy/sell'}"
 
@@ -27,23 +31,31 @@ def prompt_result() -> dict:
     for stock in data:
         prompt += f"\n{stock}"
 
-    for attempt in range(10):
-        result = get_chat_completion(prompt)
-        try:
-            json_result = json.loads(result)
-            jsons.append(json_result)
+    def try_again(prompt: str = prompt) -> None:
+        for attempt in range(10):
+            result = get_chat_completion(prompt)
+            try:
+                json_result = json.loads(result)
+                jsons.append(json_result)
 
-        except json.JSONDecodeError:
-            print(f"Failed to decode JSON, retrying... Attempt {attempt + 1}")
+            except json.JSONDecodeError:
+                print(f"Failed to decode JSON, retrying... Attempt {attempt + 1}")
 
-            if len(prompt.split("\n")) > 1:
-                prompt = "\n".join(prompt.split("\n")[:-1])
-            else:
-                print("No more data to remove, exiting...")
-                raise ValueError("Failed to decode JSON after 10 attempts, exiting...")
+                if len(prompt.split("\n")) > 1:
+                    prompt = "\n".join(prompt.split("\n")[:-1])
+                else:
+                    print("No more data to remove, exiting...")
+                    raise ValueError(
+                        "Failed to decode JSON after 10 attempts, exiting..."
+                    )
+
+    try_again()
 
     if len(jsons) == 0:
         raise ValueError("Failed to decode JSON 10 times, exiting...")
+    elif len(jsons) <= 3:
+        print("Only 1-3 JSONs detected, continuing...")
+        try_again()
 
     merged = defaultdict(list)
 
@@ -62,6 +74,8 @@ def prompt_result() -> dict:
     for key in keys_to_delete:
         print("Deleting because of conflicts: ", key)
         del merged_dict[key]
+
+    merged_dict["date"] = datas["date"]
 
     print("Merged dict: ", merged_dict)
 
