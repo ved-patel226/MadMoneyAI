@@ -21,7 +21,7 @@ def timing_decorator(func):
     return wrapper
 
 
-@timing_decorator
+# @timing_decorator
 def get_chat_completion(message):
     max_tokens = 8000
     conversation_history = []

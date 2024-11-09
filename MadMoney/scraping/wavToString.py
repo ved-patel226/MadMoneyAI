@@ -21,6 +21,7 @@ def convert_to_json() -> None:
     client = Groq(api_key=env_to_var("GROQ_KEY"))
 
     full_transcription = []
+    found = False
 
     for file in tqdm(files, desc="Converting voice to text (Please wait)"):
         with open("segments/" + file, "rb") as f:
@@ -29,6 +30,11 @@ def convert_to_json() -> None:
                 model="whisper-large-v3",
                 response_format="verbose_json",
             )
+
+            if not found and "lightning round" in transcription.text.lower():
+                found = True
+                full_transcription = []
+
             full_transcription.append(transcription.text)
 
     mongo = MongoDBClient()
