@@ -13,15 +13,11 @@ def check_created_today() -> dict | bool:
     dates = [transcript["date"] for transcript in transcripts]
 
     today = datetime.today().strftime("%Y-%m-%d")
-<<<<<<< HEAD
     try:
         latest = max(dates)
     except:
         return False
 
-=======
-    latest = max(dates)
->>>>>>> 0a0662676ea2ca5ef2b8eac4b75e1ba2fcb82ee4
     latest_strftime = latest.strftime("%Y-%m-%d")
 
     if latest_strftime == today:

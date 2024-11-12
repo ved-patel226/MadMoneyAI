@@ -2,21 +2,11 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import Auth from "./auth/auth";
 import getAPI from "./functions/getAPI";
 import React, { useEffect } from "react";
-<<<<<<< HEAD
 import Cookies from "cookiejs";
 import NavBar from "./components/navBar";
 import Hero from "./components/hero";
 import CreateSummary from "./components/createSummary";
 import ShowStock from "./components/showData";
-=======
-import { get } from "http";
-import Cookies from "cookiejs";
-import NavBar from "./components/navBar";
-import PlaceHolder from "./components/placeHolder";
-import Hero from "./components/hero";
-import stocksView from "./components/stocksView";
-import CreateSummary from "./components/createSummary";
->>>>>>> 0a0662676ea2ca5ef2b8eac4b75e1ba2fcb82ee4
 
 function App() {
   const [auth, setAuth] = React.useState(false);
@@ -35,11 +25,8 @@ function App() {
   const [checkDataCreatedToday, setCheckDataCreatedToday] =
     React.useState(Boolean);
 
-<<<<<<< HEAD
   const [DataCreatedToday, setDataCreatedToday] = React.useState(JSON);
 
-=======
->>>>>>> 0a0662676ea2ca5ef2b8eac4b75e1ba2fcb82ee4
   const checkCreatedTodayCall = async () => {
     const data = await getAPI({ url: "check/created/today" });
     if (data == false) {
@@ -47,7 +34,6 @@ function App() {
       setCheckDataCreatedToday(false);
     } else {
       console.log("Data created today");
-<<<<<<< HEAD
       delete data.date;
       console.log(data);
       setCheckDataCreatedToday(true);
@@ -58,13 +44,6 @@ function App() {
   useEffect(() => {
     checkCreatedTodayCall();
   }, []);
-=======
-      setCheckDataCreatedToday(true);
-    }
-  };
-
-  checkCreatedTodayCall();
->>>>>>> 0a0662676ea2ca5ef2b8eac4b75e1ba2fcb82ee4
 
   return (
     <div className="App">
@@ -78,7 +57,6 @@ function App() {
 
       {auth ? (
         <>
-<<<<<<< HEAD
           {checkDataCreatedToday ? (
             <ShowStock data={DataCreatedToday} />
           ) : (
@@ -86,9 +64,6 @@ function App() {
               <CreateSummary />
             </>
           )}
-=======
-          <CreateSummary />
->>>>>>> 0a0662676ea2ca5ef2b8eac4b75e1ba2fcb82ee4
         </>
       ) : (
         <Hero first={checkDataCreatedToday} />

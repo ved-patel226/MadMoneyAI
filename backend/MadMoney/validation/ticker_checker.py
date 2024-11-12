@@ -11,6 +11,9 @@ import time
 
 
 def is_valid_ticker(ticker):
+    if ticker[0] == "^":
+        ticker = ticker[1:]
+
     info = yf.Ticker(ticker).history(period="1d", interval="1d")
     return len(info) > 0
 
@@ -21,13 +24,14 @@ def check_json_ticker() -> None:
 
     print("Checking for valid tickers in the JSON data...")
     data = {
-        key: value
+        key if key[0] != "^" else key[1:]: value
         for key, value in data.items()
-        if key == "_id" or key == "date" or is_valid_ticker(key)
+        if key == "_id"
+        or key == "date"
+        or is_valid_ticker(key if key[0] != "^" else key[1:])
     }
 
     print("Number of valid tickers: ", len(data) - 2)
-    print(data)
 
     if len(data2) == len(data):
         print("All tickers are valid!")
@@ -36,7 +40,6 @@ def check_json_ticker() -> None:
         for key, value in data2.items():
             if key not in data:
                 print(key, value)
-                time.sleep(1)
 
         mongo = MongoDBClient()
         mongo.update_one("results", data2, data)

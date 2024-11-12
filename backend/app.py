@@ -116,20 +116,12 @@ def check_created_today():
 
 @celery.task(bind=True)
 def long_running_task(self):
-<<<<<<< HEAD
     total_steps = 5
-=======
-    total_steps = 10
->>>>>>> 0a0662676ea2ca5ef2b8eac4b75e1ba2fcb82ee4
     current_step = 0
 
     functions = {
         0: lambda: download_audio_as_wav(get_latest_video()),
-<<<<<<< HEAD
         1: trim_audio(short=True),
-=======
-        1: trim_audio,
->>>>>>> 0a0662676ea2ca5ef2b8eac4b75e1ba2fcb82ee4
         2: convert_to_json,
         3: prompt_result_mongo,
         4: check_json_ticker,
@@ -151,10 +143,7 @@ def long_running_task(self):
             "status": "Task completed successfully!",
             "current": current_step,
             "total": total_steps,
-<<<<<<< HEAD
             "data": API.get_recent(),
-=======
->>>>>>> 0a0662676ea2ca5ef2b8eac4b75e1ba2fcb82ee4
         }
 
     except Exception as e:
@@ -164,12 +153,9 @@ def long_running_task(self):
 @app.route("/create/today", methods=["GET"])
 @jwt_required(optional=True)
 def create_today():
-<<<<<<< HEAD
     if API.check_created_today():
         return jsonify({"error": "Already created today"}), 200
 
-=======
->>>>>>> 0a0662676ea2ca5ef2b8eac4b75e1ba2fcb82ee4
     task = long_running_task.apply_async()
     return jsonify({"task_id": task.id}), 202
 

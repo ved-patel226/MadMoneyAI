@@ -1,9 +1,6 @@
 import { useState, useEffect } from "react";
 import getAPI from "../functions/getAPI";
-<<<<<<< HEAD
 import ShowStock from "./showData";
-=======
->>>>>>> 0a0662676ea2ca5ef2b8eac4b75e1ba2fcb82ee4
 
 function CreateSummary() {
   const [loading, setLoading] = useState(false);
@@ -20,13 +17,10 @@ function CreateSummary() {
 
     if (data["task_id"]) {
       setTaskID(data["task_id"]);
-<<<<<<< HEAD
     } else if (data["error"]) {
       setTaskID("");
       setLoading(false);
       return alert(data["error"]);
-=======
->>>>>>> 0a0662676ea2ca5ef2b8eac4b75e1ba2fcb82ee4
     } else {
       setTaskID("");
       setLoading(false);
@@ -40,13 +34,8 @@ function CreateSummary() {
       setProgress(data.progress);
 
       if (data.state === "SUCCESS") {
-<<<<<<< HEAD
         setLoading(false);
         window.location.reload();
-=======
-        setResult(data.result);
-        setLoading(false);
->>>>>>> 0a0662676ea2ca5ef2b8eac4b75e1ba2fcb82ee4
       }
     }
   };
@@ -63,13 +52,7 @@ function CreateSummary() {
     <div className="flex items-center justify-center min-h-screen">
       <div className="hero p-6">
         {status === "SUCCESS" && result ? (
-<<<<<<< HEAD
           <ShowStock data={result} />
-=======
-          <h1 className="mt-4 text-3xl font-bold text-primary">
-            Task completed successfully! {JSON.stringify(result)}
-          </h1>
->>>>>>> 0a0662676ea2ca5ef2b8eac4b75e1ba2fcb82ee4
         ) : (
           <>
             {!loading && (
