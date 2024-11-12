@@ -5,6 +5,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..",
 
 from pymongo import MongoClient
 from MadMoney.essentials.env_to_var import env_to_var
+from bson import ObjectId
 
 
 class MongoDBClient:
@@ -30,6 +31,8 @@ class MongoDBClient:
         collection = self.database[collection_name]
         update_with_set = {"$set": update}
         result = collection.update_one(query, update_with_set)
+        if result.modified_count == 0:
+            raise Exception("Update failed: No documents were modified.")
         return result.modified_count
 
     def delete_one(self, collection_name, query):
@@ -47,9 +50,10 @@ class MongoDBClient:
 
 
 def main() -> None:
-    mongo = MongoDBClient("test")
-    mongo.delete_all()
-    mongo.close()
+    mongo = MongoDBClient()
+    mongo.update_one(
+        "results", {"_id": ObjectId("6733c82044a8ad8515601b13")}, {"date": "2021-08-02"}
+    )
 
 
 if __name__ == "__main__":

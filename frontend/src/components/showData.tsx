@@ -9,8 +9,9 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import getAPI from "../functions/getAPI";
+import React, { useState, useEffect } from "react";
 
-// Register the required components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -26,40 +27,73 @@ interface showDataProps {
 }
 
 function ShowStock({ data }: showDataProps) {
+  const [stockData, setStockData] = useState<any[]>([]);
+
+  console.log("data", data["GOOG"]);
+
+  const stockDataCall = async () => {
+    const response = await getAPI({ url: "get/recent" });
+    if (response["prices"]) {
+      const newData = response["prices"].map((price: any[]) => ({
+        symbol: price[0],
+        prices: price[1],
+      }));
+      setStockData((prevData) => [...prevData, ...newData]);
+      console.log(newData);
+    }
+  };
+
+  useEffect(() => {
+    stockDataCall();
+  }, []);
+
   return (
     <div className="space-y-4">
-      {Object.entries(data).map(([key, value]) => {
-        // Assuming value is an array of stock data for the graph
-        const chartData = Array.isArray(value)
-          ? {
-              labels: value.map((_, index) => `Day ${index + 1}`), // Adjust according to your data
-              datasets: [
-                {
-                  label: key,
-                  data: value.map((val) => parseFloat(val)), // Assuming value is a price or number
-                  borderColor: "#20B2AA",
-                  backgroundColor: "rgba(32, 178, 170, 0.2)",
-                  fill: true,
-                },
-              ],
-            }
-          : {};
+      <div className="flex flex-row w-full justify-center">
+        {stockData.length > 0 &&
+          stockData.map((stock, index) => (
+            <div key={index} className="flex flex-col gap-5 w-1/2">
+              <div className="flex flex-row justify-center items-center gap-5">
+                <h1 className="text-[50px] font-semibold">{stock.symbol}</h1>
+                {data[stock.symbol] && (
+                  <h1 className="badge badge-primary ml-2 text-[20px] p-[20px]">
+                    {Array.isArray(data[stock.symbol])
+                      ? (data[stock.symbol] as string[]).join(", ")
+                      : typeof data[stock.symbol] === "object"
+                      ? JSON.stringify(data[stock.symbol])
+                      : String(data[stock.symbol])}
+                  </h1>
+                )}
+              </div>
 
-        return (
-          <div key={key} className="flex flex-col gap-5">
-            <h1 className="text-xl font-semibold">{key}</h1>
-            {Array.isArray(value) && value.length > 0 && (
               <Line
-                data={chartData}
+                data={{
+                  labels: stock.prices.map(
+                    (_: number, index: number) => `Day ${index + 1}`
+                  ),
+                  datasets: [
+                    {
+                      label: stock.symbol,
+                      data: stock.prices,
+                      borderColor: "#20B2AA",
+                      backgroundColor: "rgba(32, 178, 170, 0.2)",
+                      fill: true,
+                    },
+                  ],
+                }}
                 options={{
                   responsive: true,
-                  plugins: { legend: { position: "top" } },
+                  plugins: { legend: { display: false } },
+                  scales: {
+                    x: {
+                      display: false,
+                    },
+                  },
                 }}
               />
-            )}
-          </div>
-        );
-      })}
+            </div>
+          ))}
+      </div>
     </div>
   );
 }

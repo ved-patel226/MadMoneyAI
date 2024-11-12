@@ -121,7 +121,7 @@ def long_running_task(self):
 
     functions = {
         0: lambda: download_audio_as_wav(get_latest_video()),
-        1: trim_audio(short=True),
+        1: trim_audio(),
         2: convert_to_json,
         3: prompt_result_mongo,
         4: check_json_ticker,
@@ -158,6 +158,11 @@ def create_today():
 
     task = long_running_task.apply_async()
     return jsonify({"task_id": task.id}), 202
+
+
+@app.route("/get/recent", methods=["GET"])
+def get_recent():
+    return jsonify(API.get_recent()), 200
 
 
 @app.route("/task_status/<task_id>", methods=["GET"])

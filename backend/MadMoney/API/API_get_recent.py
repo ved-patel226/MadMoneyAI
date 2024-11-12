@@ -11,6 +11,7 @@ from yfinance import Ticker
 def get_30_day_price_history(ticker_symbol: str):
     ticker = Ticker(ticker_symbol)
     history = ticker.history(period="1mo")
+
     return history
 
 
@@ -33,15 +34,19 @@ def get_recent():
     itemsToChange = []
     prices = []
 
-    for item in most_recent:
+    itemsToLoop = [key for key in most_recent.keys() if key != "date"]
+
+    for item in itemsToLoop:
         if item[0] == "^":
             itemsToChange.append(item)
-            most_recent[item[1:]] = most_recent.pop(item)  # updates in dict
+            most_recent[item[1:]] = most_recent.pop(item)
             item = item[1:]
 
-        prices.append([item, get_30_day_price_history(item)])
+        history = get_30_day_price_history(item)
 
-    # most_recent["prices"] = prices
+        prices.append([item, history["Close"].to_numpy().tolist()])
+
+    most_recent["prices"] = prices
 
     return most_recent
 
