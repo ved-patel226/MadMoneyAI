@@ -49,16 +49,19 @@ function ShowStock({ data }: showDataProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-row w-full justify-center">
+      <div className="flex flex-row w-full justify-center flex-wrap gap-5">
         {stockData.length > 0 &&
           stockData.map((stock, index) => (
-            <div key={index} className="flex flex-col gap-5 w-1/2">
+            <div
+              key={index}
+              className="flex flex-col gap-5 w-1/4 border border-primary p-5 rounded-lg"
+            >
               <div className="flex flex-row justify-center items-center gap-5">
                 <h1 className="text-[50px] font-semibold">{stock.symbol}</h1>
                 {data[stock.symbol] && (
                   <h1 className="badge badge-primary ml-2 text-[20px] p-[20px]">
                     {Array.isArray(data[stock.symbol])
-                      ? (data[stock.symbol] as string[]).join(", ")
+                      ? (data[stock.symbol][0] as string[])
                       : typeof data[stock.symbol] === "object"
                       ? JSON.stringify(data[stock.symbol])
                       : String(data[stock.symbol])}
