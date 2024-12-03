@@ -1,15 +1,20 @@
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import Auth from "./auth/auth";
 import getAPI from "./functions/getAPI";
-import React, { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Cookies from "cookiejs";
 import NavBar from "./components/navBar";
 import Hero from "./components/hero";
 import CreateSummary from "./components/createSummary";
 import ShowStock from "./components/showData";
 
+// Define the type for stock data to match the interface in showData.tsx
+interface StockData {
+  [key: string]: [string, string, number[]];
+}
+
 function App() {
-  const [auth, setAuth] = React.useState(false);
+  const [auth, setAuth] = useState(false);
 
   const checkAuth = async () => {
     const user = Cookies.get("user");
@@ -22,22 +27,19 @@ function App() {
     checkAuth();
   }, []);
 
-  const [checkDataCreatedToday, setCheckDataCreatedToday] =
-    React.useState(Boolean);
-
-  const [DataCreatedToday, setDataCreatedToday] = React.useState(JSON);
+  const [checkDataCreatedToday, setCheckDataCreatedToday] = useState(false);
+  const [DataCreatedToday, setDataCreatedToday] = useState<StockData>({});
 
   const checkCreatedTodayCall = async () => {
     const data = await getAPI({ url: "check/created/today" });
-    if (data == false) {
+    if (data === false) {
       console.log("No data created today");
       setCheckDataCreatedToday(false);
     } else {
-      console.log("Data created today");
       delete data.date;
-      console.log(data);
+      console.log("Stock Recommendation data: ", data);
       setCheckDataCreatedToday(true);
-      setDataCreatedToday(data);
+      setDataCreatedToday(data as StockData);
     }
   };
 
@@ -54,7 +56,6 @@ function App() {
           </GoogleOAuthProvider>
         </header>
       </NavBar>
-
       {auth ? (
         <>
           {checkDataCreatedToday ? (

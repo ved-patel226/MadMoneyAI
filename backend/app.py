@@ -147,7 +147,7 @@ def long_running_task(self):
         }
 
     except Exception as e:
-        raise self.retry(exc=e)
+        self.retry(countdown=10)
 
 
 @app.route("/create/today", methods=["GET"])

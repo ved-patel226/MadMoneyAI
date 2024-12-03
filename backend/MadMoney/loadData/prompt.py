@@ -8,6 +8,7 @@ from collections import defaultdict
 from MadMoney.loadData import *
 from MadMoney.essentials import MongoDBClient
 from datetime import datetime
+from pprint import pprint
 
 
 def prompt_result() -> dict:
@@ -17,7 +18,7 @@ def prompt_result() -> dict:
 
     data = datas["transcriptions"]
 
-    json_format = "{ 'stock symbol': 'buy/sell'}"
+    json_format = "{ 'stock symbol': ['buy/sell', 'reason why to buy/sell the stock'] }"
 
     prompt_lines = [
         f"You are an investment advisor. You will return JSON data in the form: {json_format} DO NOT PUT ANYTHING ELSE. JUST THE JSON DATA. You will use this data to figure out the stock data. DO NOT USE ANY OTHER KNOWLEDGE EXCEPT FOR THIS DATA:"
@@ -41,7 +42,9 @@ def prompt_result() -> dict:
                 jsons.append(json_result)
 
             except json.JSONDecodeError:
-                print(f"Failed to decode JSON, retrying... Attempt {attempt + 1}")
+                print(
+                    f"Failed to decode JSON, retrying... Attempt {attempt + 1}. Result: {result}"
+                )
 
                 if len(prompt.split("\n")) > 1:
                     prompt = "\n".join(prompt.split("\n")[:-1])
@@ -57,34 +60,31 @@ def prompt_result() -> dict:
         print("Only 1-3 JSONs detected, continuing...")
         try_again()
 
-    merged = defaultdict(list)
+    return normalize_result(jsons)
 
-    for json_result in jsons:
-        for stock, recommendation in json_result.items():
-            merged[stock].append(recommendation)
 
-    merged_dict = dict(merged)
+def normalize_result(result=dict) -> dict:
 
-    keys_to_delete = [
-        stock
-        for stock, recommendations in merged_dict.items()
-        if len(set(recommendations)) != 1
-    ]
+    results = defaultdict(list)
 
-    for key in keys_to_delete:
-        print("Deleting because of conflicts: ", key)
-        del merged_dict[key]
+    for r in result:
+        for stock, data in r.items():
+            results[stock].append(data)
 
-    merged_dict["date"] = datas["date"]
+    transformed_data = {}
+    for key, values in results.items():
+        actions = [item[0] for item in values]
+        reasons = max([item[1] for item in values], key=len)
+        transformed_data[key] = [actions, reasons]
 
-    print("Merged dict: ", merged_dict)
-
-    return merged_dict
+    return transformed_data
 
 
 def prompt_result_mongo() -> dict:
     result = prompt_result()
     result["date"] = datetime.now()
+
+    pprint(result)
 
     mongo = MongoDBClient()
     mongo.insert_one("results", result)
@@ -92,7 +92,7 @@ def prompt_result_mongo() -> dict:
 
 
 def main() -> None:
-    prompt_result()
+    promptt = prompt_result_mongo()
 
 
 if __name__ == "__main__":

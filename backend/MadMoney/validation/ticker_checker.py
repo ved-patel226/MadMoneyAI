@@ -9,6 +9,7 @@ from MadMoney.loadData import load_json_results
 from MadMoney.essentials import MongoDBClient
 import time
 from bson import ObjectId
+from collections import Counter
 
 
 def is_valid_ticker(ticker):
@@ -20,43 +21,28 @@ def check_json_ticker() -> None:
     data = load_json_results()
     data2 = data.copy()
 
-    print("Checking for valid tickers in the JSON data...")
-    data = {
-        key: value
-        for key, value in data.items()
-        if key == "_id" or key == "date" or is_valid_ticker(key)
-    }
+    data = {k: v for k, v in data.items() if "_id" not in k and "date" not in k}
+    data = {k: v for k, v in data.items() if is_valid_ticker(k)}
 
-    print("Number of valid tickers: ", len(data) - 2)
-    print(data)
+    result = {}
 
-    if len(data2) == len(data):
-        print("All tickers are valid!")
-    else:
-        print("Invalid tickers: ")
-        for key, value in data2.items():
-            if key not in data:
-                print(key, value)
-                time.sleep(1)
+    for ticker, (recommendations, _) in data.items():
+        recommendation_count = Counter(recommendations)
+        most_common = recommendation_count.most_common(1)[0][0]
+        result[ticker] = [most_common, data2[ticker][1]]
 
-        data_without_id = {key: value for key, value in data.items() if key != "_id"}
+    result["_id"] = data2["_id"]
+    result["date"] = data2["date"]
 
-        mongo = MongoDBClient()
-        mongo.delete_one("results", {"_id": ObjectId(data2["_id"])})
-        mongo.insert_one("results", data_without_id)
-        mongo.close()
-
-        # mongo = MongoDBClient()
-        # print(mongo.find_one("results", {"_id": ObjectId(data2["_id"])}))
-        # mongo.update_one("results", {"_id": ObjectId(data2["_id"])}, data_without_id)
-        # mongo.close()
-
-        print("Invalid tickers have been removed from the JSON data.")
+    mongo = MongoDBClient()
+    mongo.delete_one("results", {"_id": data2["_id"]})
+    mongo.insert_one("results", result)
+    mongo.close()
 
 
 def main() -> None:
     data = check_json_ticker()
-    # print(is_valid_ticker("BROADCOM"))
+    print(data)
 
 
 if __name__ == "__main__":

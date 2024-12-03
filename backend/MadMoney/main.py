@@ -24,25 +24,16 @@ def clear_screen():
         os.system("clear")
 
 
-def run() -> None:
-    download_audio_as_wav(get_latest_video())
-    trim_audio()
-    convert_to_json()
+# download_audio_as_wav(get_latest_video())
+# trim_audio()
+# convert_to_json()
 
-    clear_screen()
+# clear_screen()
 
-    prompt_result_mongo()
+prompt_result_mongo()
 
-    check_json_ticker()
+check_json_ticker()
 
-    clear_screen()
+clear_screen()
 
-    print("Data has been successfully added to the database.")
-
-
-def main() -> None:
-    run()
-
-
-if __name__ == "__main__":
-    main()
+print("Data has been successfully added to the database.")
