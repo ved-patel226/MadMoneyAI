@@ -5,23 +5,23 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..",
 
 import json
 from collections import defaultdict
-from MadMoney.loadData import *
+from MadMoney.loadData import summarize, load_json_transcripts, get_chat_completion
 from MadMoney.essentials import MongoDBClient
 from datetime import datetime
 from pprint import pprint
 
 
 def prompt_result() -> dict:
-    summarize()
+    # summarize()
 
     datas = load_json_transcripts()
 
     data = datas["transcriptions"]
 
-    json_format = "{ 'stock symbol': ['buy/sell', 'reason why to buy/sell the stock'] }"
+    json_format = "{ 'stock ticker': ['buy/sell', 'reason why to buy/sell the stock'] }"
 
     prompt_lines = [
-        f"You are an investment advisor. You will return JSON data in the form: {json_format} DO NOT PUT ANYTHING ELSE. JUST THE JSON DATA. You will use this data to figure out the stock data. DO NOT USE ANY OTHER KNOWLEDGE EXCEPT FOR THIS DATA:"
+        f"You are an investment advisor. You will return JSON data in the form: {json_format}. the stock ticker is the STOCK TICKER. example: APPL for APPLE; DIS for DISNEY. DO NOT PUT ANYTHING ELSE. JUST THE JSON DATA. You will use this data to figure out the stock data. DO NOT USE ANY OTHER KNOWLEDGE EXCEPT FOR THIS DATA:"
     ]
 
     for stock in data:
@@ -35,47 +35,47 @@ def prompt_result() -> dict:
         prompt += f"\n{stock}"
 
     def try_again(prompt: str = prompt) -> None:
-        for attempt in range(10):
-            result = get_chat_completion(prompt)
-            try:
-                json_result = json.loads(result)
-                jsons.append(json_result)
+        result = (
+            get_chat_completion(prompt)
+            .replace("\n", "")
+            .replace("`", "")
+            .replace("json", "")
+            .replace("JSON", "")
+        )
 
-            except json.JSONDecodeError:
-                print(
-                    f"Failed to decode JSON, retrying... Attempt {attempt + 1}. Result: {result}"
-                )
+        try:
+            json_result = json.loads(result)
+            jsons.append(json_result)
 
-                if len(prompt.split("\n")) > 1:
-                    prompt = "\n".join(prompt.split("\n")[:-1])
-                else:
-                    print("No more data to remove, exiting...")
-                    raise ValueError(
-                        "Failed to decode JSON after 10 attempts, exiting..."
-                    )
+        except json.JSONDecodeError:
+            print(f"Failed to decode JSON, trying again... {result}")
+            prompt_fix = "FIX THE JSON DATA. ONLY OUTPUT THE FIXED JSON DATA"
+            prompt_fix += f"\n{prompt_fix}"
 
-    try_again()
+            result = get_chat_completion(prompt_fix)
 
-    if len(jsons) <= 3:
-        print("Only 1-3 JSONs detected, continuing...")
+            if len(prompt.split("\n")) > 1:
+                prompt = "\n".join(prompt.split("\n")[:-1])
+            else:
+                print("No more data to remove, exiting...")
+                raise ValueError("Failed to decode JSON after 10 attempts, exiting...")
+
+    for i in range(5):
         try_again()
 
     return normalize_result(jsons)
 
 
-def normalize_result(result=dict) -> dict:
-
-    results = defaultdict(list)
-
-    for r in result:
-        for stock, data in r.items():
-            results[stock].append(data)
-
+def normalize_result(results: list) -> dict:
     transformed_data = {}
-    for key, values in results.items():
-        actions = [item[0] for item in values]
-        reasons = max([item[1] for item in values], key=len)
-        transformed_data[key] = [actions, reasons]
+
+    for results in results:
+        for stock, data in results.items():
+            try:
+                action, reason = data
+                transformed_data[stock] = [action, reason]
+            except:
+                pass
 
     return transformed_data
 
@@ -92,7 +92,7 @@ def prompt_result_mongo() -> dict:
 
 
 def main() -> None:
-    promptt = prompt_result_mongo()
+    prompt_result_mongo()
 
 
 if __name__ == "__main__":

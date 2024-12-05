@@ -28,8 +28,7 @@ def clear_screen():
 # trim_audio()
 # convert_to_json()
 
-# clear_screen()
-
+clear_screen()
 prompt_result_mongo()
 
 check_json_ticker()

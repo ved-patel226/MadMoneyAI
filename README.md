@@ -4,11 +4,20 @@ The AI summarizer for MadMoney by Jim Cramer!
 
 ## Demo
 
-Insert gif or link to demo
+![Loading Bar](imgs/webapp2.png)
+
+## Tech Stack
+
+**Client:** React, Tailwind (Daisy UI)
+
+**Server:** Python
 
 ## Run Locally
 
 > **⚠️ Warning:** There were no AI API keys in this project. All LLMS were run locally. A **GPU** is **REQUIRED** for running locally.
+
+> To run this project, you will need to add these to .env:
+> `MONGO_URI` > `VITE_GOOGLE_CLIENT_ID` > `GOOGLE_SECRET_KEY`
 
 Clone the project
 

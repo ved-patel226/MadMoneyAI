@@ -16,7 +16,6 @@ def get_30_day_price_history(ticker_symbol: str):
 
 
 def get_recent():
-
     mongo = MongoDBClient()
     ttl = mongo.find_many("results", {})
 

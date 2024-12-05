@@ -26,7 +26,6 @@ def convert_to_json() -> None:
 
     for file in tqdm(files, desc="Converting voice to text (Please wait)"):
         with open("segments/" + file, "rb") as f:
-            print(f"Converting {file} to text")
 
             transcription = model.transcribe(segments_dir + "/" + file)
 

@@ -36,7 +36,7 @@ def get_chat_completion(message):
 
         chat_completion = ollama.chat(
             messages=conversation_history,
-            model="llama3.2",
+            model="qwen2.5",
         )
 
         conversation_history.append(

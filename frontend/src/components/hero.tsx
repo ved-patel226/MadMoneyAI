@@ -11,7 +11,7 @@ function Hero({ first }: PropsHero) {
             <h1 className="text-5xl font-bold">
               Good News! It's already Summarized!
             </h1>
-            <p className="py-6">Here are the Mad Money summaries for today:</p>
+            <p className="py-6">Login to see!</p>
           </div>
         ) : (
           <div>

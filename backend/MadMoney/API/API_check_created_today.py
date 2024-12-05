@@ -34,6 +34,7 @@ def check_created_today() -> dict | bool:
 
 def main() -> None:
     latest_transcript = check_created_today()
+    print(latest_transcript)
 
 
 if __name__ == "__main__":

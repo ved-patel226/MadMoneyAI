@@ -7,6 +7,7 @@ import NavBar from "./components/navBar";
 import Hero from "./components/hero";
 import CreateSummary from "./components/createSummary";
 import ShowStock from "./components/showData";
+import "./index.css";
 
 // Define the type for stock data to match the interface in showData.tsx
 interface StockData {

@@ -38,10 +38,13 @@ interface Stock {
 
 function ShowStock({ data }: ShowDataProps) {
   const [stockData, setStockData] = useState<Stock[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const stockDataCall = async () => {
     try {
+      setLoading(true);
       const response = await getAPI({ url: "get/recent" });
+      setLoading(false);
 
       if (response["prices"]) {
         const newData = response["prices"].map((price: any[]) => ({
@@ -60,8 +63,16 @@ function ShowStock({ data }: ShowDataProps) {
     stockDataCall();
   }, []);
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <span className="loading loading-spinner loading-lg scale-150 mb-[10vh]"></span>
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 mb-20 ">
       <div className="flex flex-row w-full justify-center flex-wrap gap-5">
         {stockData.map((stock) => (
           <div
@@ -72,11 +83,11 @@ function ShowStock({ data }: ShowDataProps) {
               <h1 className="text-[50px] font-semibold">{stock.symbol}</h1>
               <h1
                 className={`badge ml-2 text-[20px] p-[20px] ${
-                  data[stock.symbol][0] === "buy"
+                  data[stock.symbol][0] === "Buy"
                     ? "badge-success"
-                    : data[stock.symbol][0] === "sell"
+                    : data[stock.symbol][0] === "Sell"
                     ? "badge-error"
-                    : "badge-neutral"
+                    : "badge-ghost"
                 }`}
               >
                 {data[stock.symbol][0]}
